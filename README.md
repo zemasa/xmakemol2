@@ -1,4 +1,4 @@
-xmakemol2
+XMakemol2
 =========
 
 XMakemol2
