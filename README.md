@@ -1,7 +1,7 @@
 XMakemol2
 =========
 
-XMakemol is a mouse-based software, written using the LessTif widget set, for viewing atomic and other chemical systems. It reads XYZ input and renders atoms, bonds and hydrogen bonds.
+XMakemol is a mouse-based software, written using the LessTif widget set, for viewing atomic and other chemical systems. It reads XYZ input and renders atoms bonds and hydrogen bonds.
 
 XMakemol2 was created from the original XMakemol software to fill in the need to manipulate/operate a XYZ file.
 
