@@ -1,0 +1,44 @@
+.\"Created with GNOME Manpages Editor Wizard
+.\"http://gmanedit.sourceforge.net
+.\"Sergio Rua <srua@gpul.org>
+.\"
+.TH "xmake_anim.pl" "1" "May 2002" "XMakemol" ""
+
+.SH NAME
+xmake_anim.pl \- A script to make GIF animations from XMakemol output.
+
+.SH SYNOPSIS
+.B xmake_anim.pl
+.RI [ options ]
+prefix
+.br
+
+.SH DESCRIPTION
+.PP
+xmake_anim.pl is used to make a GIF animation from a series of XPM
+files produced by XMakemol. The XPM files should have the common
+prefix \fBprefix\fP.
+
+.SH OPTIONS
+.B
+.IP -c
+This option leads to the temporary (single image) GIF files being
+cleaned up after the animation has been created from them.
+.B
+.IP -d
+This option allows the delay (in 1/100th seconds) between animated
+frames to be set. By default, there is no delay.
+.B
+.IP -l
+This option can be used to set the number of times the animation loops
+for. By default, the animation loops indefinitely.
+.B
+.IP -o
+This option can be used to set the name of the file that the animation
+is saved to.
+
+.SH SEE ALSO
+xmakemol(1)
+
+.SH AUTHOR
+Matthew P. Hodges <matt@tc.bham.ac.uk>

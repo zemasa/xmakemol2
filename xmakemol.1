@@ -1,0 +1,66 @@
+.TH "xmakemol" "1" "May 2004" "XMakemol" ""
+
+.SH NAME
+XMakemol \- A program for visualizing atomic and molecular systems.
+
+.SH SYNOPSIS
+.B xmakemol
+.RI [ options ]
+
+.SH DESCRIPTION
+.PP
+XMakemol is a program for viewing and manipulating atomic and
+molecular systems.
+.br 
+XMakemol is a mouse\-based application and many features can be
+accessed by clicking or dragging the mouse on the main window.
+Additional popup dialogs offer a number of additional features.
+
+.SH OPTIONS
+.B
+.IP \-a
+Switch off atoms.
+.B
+.IP \-b
+Switch off bonds.
+.B
+.IP \-h
+Switch on hydrogen bonds.
+.B
+.IP \-c
+Set the canvas colour.
+.B
+.IP \-e
+Set the bounding box colour.
+.B
+.IP \-f
+Read file on startup (use '\-f \-' for STDIN).
+.B
+.IP \-G
+Switch off GL rendering.
+.B
+.IP \-u
+Print usage information.
+.B
+.IP \-v
+Print version information.
+
+.SH FILES
+.LP 
+\fI/usr/share/xmakemol/elements\fP
+List of element properties.
+
+.SH ENVIRONMENT VARIABLES
+.LP 
+.TP 
+\fBXM_ELEMENTS\fP
+Specifies an alternative location for the elements file.
+
+.SH EXAMPLES
+.LP 
+To run this program the standard way type:
+.LP 
+xmakemol \-f <filename>
+
+.SH AUTHOR
+Matthew P. Hodges <matt@tc.bham.ac.uk>

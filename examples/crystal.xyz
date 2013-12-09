@@ -1,0 +1,4 @@
+2
+
+Na 0.0 0.0 0.0 crystal_origin   0.0 0.0 0.0 crystal_images 5 5 5
+Cl 2.5 2.5 2.5 crystal_vector 1 5.0 0.0 0.0 crystal_vector 2 0.0 5.0 0.0 crystal_vector 3 0.0 0.0 5.0

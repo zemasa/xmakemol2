@@ -1,0 +1,17 @@
+This directory contains a version 6 release of XMakemol. Report
+bugs/bug-fixes/suggestions to xmakemol-bugs@nongnu.org.
+
+For installation instructions, see the file INSTALL.
+
+If output of XMakemol is used in publications and you wish to cite it,
+use something like:-
+
+M. P. Hodges, XMakemol:a program for visualizing atomic and molecular
+systems, version 6 (2001).
+
+Optionally, the URL of the XMakemol homepage can be included:-
+
+http://www.nongnu.org/xmakemol/
+
+XMakemol is free software. See the file COPYING for copying
+conditions.

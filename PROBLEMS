@@ -1,0 +1,45 @@
+-*- outline -*-
+
+* XMakemol Problems
+
+This file contains descriptions and solutions to known problems.
+
+** Parsing XYZ files
+
+If XMakemol has problems parsing XYZ files, then it may be because of
+the setting of the LANG environment variable. Assuming you are using a
+bash-like shell, try launching the program with:
+
+    $ LANG=en_GB xmakemol
+
+** Saving XPM files
+
+With OpenGL rendering you might get unexpected results, like seeing
+cutouts in your XPM image where any windows overlapped the main
+drawing area.  A workaround for this problem, if you are using
+XFree86, is to enable a backing store in your /etc/X11/XF86Config-4:
+
+    Section "Device"
+
+            [...]
+
+            Option              "BackingStore"
+    EndSection
+
+If this is successful, then in your /var/log/XFree86.0.log file you
+should see lines like:
+
+    (**) TRIDENT(0): Option "BackingStore"
+    (**) TRIDENT(0): Backing store enabled
+    
+** Undo/Discard operations after having added/deleted atoms
+
+If you try to undo a operation after having added/deleted an atom, it
+is very probable that the molecule will break or that XMakemol will 
+crash. The only solution is to add/delete atoms before or after 
+starting a series of operations.
+
+** Reflecting using (0,0,0) as on of the points to form the plane
+
+If you try to reflect using the origin as one of the points to form the plane the molecule WILL
+break. There is no known of solution at the moment.

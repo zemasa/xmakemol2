@@ -1,0 +1,159 @@
+# -*- makefile -*-
+
+# Copyright (C) 1998, 1999, 2000, 2001, 2005 Matthew P. Hodges
+# This file is part of XMakemol.
+
+# XMakemol is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2, or (at your option)
+# any later version.
+
+# XMakemol is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+# General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with XMakemol; see the file COPYING. If not, write to the Free
+# Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+# 02111-1307 USA
+
+# Configure
+# Point of installation
+
+# PREFIX = /usr/local
+
+PROG =	xmakemol
+VERSION = $(shell cat VERSION)
+
+HDRS = bbox.h bonds.h config.h defs.h draw.h globals.h gl_funcs.h	\
+vectors.h view.h xm_logo.h operations.h
+
+OBJS = animate.o basename.o bbox.o canvas.o control.o draw.o edit.o	\
+file.o frames.o gl_funcs.o help.o menus.o region.o rotate.o sort.o	\
+store.o track.o translate.o utils.o view.o vectors.o xmakemol.o operations.o
+
+SRCS = ${OBJS:.o=.c}
+
+TAR = $(SRCS) $(HDRS) Makefile.orig ChangeLog elements COPYING README	\
+INSTALL AUTHORS VERSION PROBLEMS XMakemol.ad xmake_anim.pl xmakemol.1
+
+# Specify the version
+
+VERS = -DVERSION=\"${VERSION}\"
+
+# Configure
+# Specify where the elements file lives. If an individual user wants
+# to use a private elements file, they can set the environment
+# variable XM_ELEMENTS.
+
+ELEM_FILE=/etc/xmakemol/elements
+ELEM = -DELEMENTS=\"${ELEM_FILE}\"
+
+# Configure
+# If libXpm is available uncomment the following lines
+
+# XPM_DEFS = -DXPM
+# XPM_LIBS = -lXpm
+
+# Configure
+# If OpenGl is available uncomment the following lines - NB this is
+# only partially implemented, so use at your own risk
+
+# GL_DEFS = -DGL
+# GL_LIBS = -lGL -lGLU -lGLw
+
+# Configure
+# If CrystalEyes stereoscopic shutter glasses are available and XMakemol 
+# is being compiled on an SGI, uncomment the following lines. Currently 
+# the stereo mode used is STEREO_TOP, so make sure the XMakemol window is 
+# positioned in the upper half of your screen before switching to SGI stereo 
+# mode.
+# (This mode requires that GL_DEFS and GL_LIBS above are also uncommented)
+
+# CE_DEFS = -DSGI_STEREO
+# CE_LIBS = -lXext
+
+# Configure
+# Choose compiler options. SGI, DEC and SUN have some useful flags set
+# and certain libraries which are required. Uncomment the desired region.
+# Compilation with gcc is recommended.
+
+# SGI setup
+#
+# CC = cc
+# COMP = -n32 -mips4
+# OPT = -Ofast=ip22_5k
+# LIBS = -lm -lgen -lXm -lXt -lX11
+
+# DEC setup
+#
+# CC = cc
+# COMP =
+# OPT = -O4
+# LIBS = -lm -lXm -lXt -lX11
+
+# SUN setup
+#
+# CC = cc
+# COMP = -D_XOPEN_SOURCE -xdepend -xchip=ultra -xarch=v8plus -xsafe=mem
+# OPT = -fast -xO5
+# LIBDIRS = -L/usr/openwin/lib -L/usr/dt/lib -L/opt/local/lib -R/usr/openwin/lib:/usr/dt/lib:/opt/local/lib
+# LIBS =	-lm -lgen -lposix4 -lXm -lXt -lX11
+
+# Linux setup
+#
+# CC = gcc
+# COMP = -I/usr/X11R6/include -O3 -Wall
+# LIBDIRS = -L/usr/X11R6/lib
+# LIBS = -lm -lXm -lXt -lX11 -lXext -ldl -lpthread
+
+DEBUG = -g
+
+# No changes below here should be needed
+
+CFLAGS  = ${DEBUG} ${OPT} ${COMP} ${XPM_DEFS} ${GL_DEFS} ${CE_DEFS}
+LDFLAGS = ${DEBUG}
+
+
+all: $(PROG)
+
+$(PROG): $(OBJS)
+	$(CC) $(LDFLAGS) -o $@ $(OBJS) ${LIBDIRS} ${XPM_LIBS} ${GL_LIBS} $(LIBS) ${CE_LIBS}
+
+clean:
+	rm -f $(PROG) $(OBJS) core
+
+tar:
+	tar  zvcf xmakemol-${VERSION}.tar.gz $(TAR)
+
+install:
+	install -D xmakemol    $(DESTDIR)$(PREFIX)/X11R6/bin/xmakemol
+	install -D elements    $(DESTDIR)/etc/xmakemol/elements
+	install -D xmakemol.1  $(DESTDIR)$(PREFIX)/X11R6/man/man1/xmakemol.1x
+	install -D XMakemol.ad $(DESTDIR)/etc/X11/app-defaults/XMakemol
+
+animate.o: defs.h globals.h
+bbox.o: bbox.h defs.h gl_funcs.h globals.h view.h
+canvas.o: bonds.h defs.h draw.h gl_funcs.h globals.h view.h xm_logo.h
+control.o: defs.h globals.h
+draw.o: bonds.h defs.h draw.h globals.h vectors.h view.h
+edit.o: defs.h draw.h globals.h vectors.h view.h
+file.o: file.c bonds.h defs.h draw.h gl_funcs.h globals.h view.h
+	${CC} ${CFLAGS} ${ELEM} -c $<
+frames.o: config.h draw.h globals.h
+gl_funcs.o: bonds.h defs.h draw.h globals.h view.h gl_funcs.h
+help.o: help.c globals.h
+	${CC} ${CFLAGS} ${VERS} -c $<
+menus.o: globals.h view.h
+region.o: globals.h
+rotate.o: draw.h globals.h
+sort.o: globals.h
+store.o: globals.h
+track.o: defs.h globals.h
+translate.o: globals.h
+utils.o: config.h defs.h globals.h
+vectors.o: defs.h globals.h vectors.h view.h
+view.o: globals.h view.h
+xmakemol.o: xmakemol.c defs.h globals.h view.h gl_funcs.h
+	${CC} ${CFLAGS} ${ELEM} ${VERS} -c $<

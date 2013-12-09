@@ -1,0 +1,12 @@
+List of things to do (in no particular order):
+
+o Bounding box improvements (specify vertices or angles/lengths); also
+  write EPS bounding box code.
+
+o Add more GL features (e.g., axes).
+
+o Add a button to deselect the radiobox in the rotation window
+
+o Change the order in which atoms are selected for the reflection (select those that are going to be reflected first)
+
+o Add a multiplier option to the translation

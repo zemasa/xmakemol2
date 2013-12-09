@@ -1,0 +1,560 @@
+XMakemol Documentation
+
+Matthew P. Hodges
+
+Version: 5.16
+
+Overview
+
+XMakemol is an application for the visualization and manipulation of atomic,
+molecular, and other chemical systems. It is written in ANSI C and uses the
+Xlib library for rendering and also the Xt and LessTif toolkits for the user
+interface. XMakemol is only distributed under the GNU GENERAL PUBLIC LICENSE
+(Version 2, June 1991) which means that it is free in the sense that you have
+the freedom to obtain and modify the source and to redistribute it. A copy of
+the license should have been included in the distribution. You can download
+view it at http://www.gnu.org/copyleft/gpl.html.
+
+XMakemol is principally a mouse-based application with menus and pop up dialog
+boxes with buttons, scrollbars etc. In addition, some dialogs have text fields
+which require information to be inputed from the keyboard. The main window of
+the application is split into menus at the top, the canvas in the middle and an
+area at the bottom in which messages appear.
+
+The manual will cover invocation then all the menu entries then some
+miscellaneous features, mainly dealing with the methods of interacting with the
+system on the canvas.
+
+Invocation
+
+Various options are available from the command line. These are as follows:
+
+ Usage: xmakemol [options]
+        -a          Switch off atoms
+        -b          Switch off bonds
+        -h          Switch on hydrogen bonds
+        -c <colour> Set the canvas colour
+        -e <colour> Set the bounding box colour
+        -f <file>   Read file on startup (use '-f -' for STDIN)
+        -G          Switch off GL rendering [If OpenGL support is compiled in]
+        -u          Print usage information
+        -v          Print version information
+
+The -a, -b and -h options toggle the default behaviour and as such might be
+useful. The -c and -e options allow the user to control the background and
+bounding box colours in case the defaults are not liked (these may be named
+colours, e.g., "cadet blue", or hex triplets, e.g., "#5F9EA0"). The -f option
+allows a file to be specified to be read in on starting the program. The -u
+options echos the above text to standard output and the -v option prints the
+version and Copyright information. The -G option switches off rendering using
+OpenGL primitives, and is only available if support for OpenGL has been
+compiled in. As for any X application, other options can be specified, for
+example, -geometry.
+
+Menus
+
+File
+
+The menu entries under File deal with the reading and writing of files and
+quitting the application.
+
+Open
+
+Choose a file to be read by XMakemol. The file must be in XYZ syntax an example
+of which follows:
+
+ 4
+   1 Energy = -594.0315361957
+ Ar      0.86540     -0.41643      2.29667
+ Ar     -1.78146     -2.11666      0.23641
+ Ar      1.11998     -0.42506     -1.45518
+ Ar     -1.52687      1.63520      0.24505
+ 4
+   2 Energy = -594.0315361957
+ Ar      0.86540     -0.41643      2.29667
+ Ar     -1.78146     -2.11666      0.23641
+ Ar      1.11998     -0.42506     -1.45518
+ Ar     -1.52687      1.63520      0.24505
+
+The file is set into "frames" of which there are two in the above example. The
+structure of each frame is as follows. The first line contains the number of
+atoms in the frame (M) and the second line contains a comment, which may be
+empty. The next M lines contain the type of atom followed by the three
+Cartesian coordinates; the length unit assumed is Angstrom. Note that details
+of each type of atom are held in the elements file (see below) which contains
+atomic masses radii and specified colours.
+
+In addition to the basic syntax, it is possible to declare vectors (default
+maximum of three per atom):
+
+ 3
+ Water (axes on oxygen displayed using vectors)
+ O    0.0  0.0  0.00 atom_vector 1 0 0 atom_vector 0 1 0 atom_vector 0 0 1
+ H    0.77 0.0 -0.59
+ H   -0.77 0.0 -0.59
+
+and ellipses:
+
+ 3
+ All ellipses should look the same
+ O    -4.0 0.0 0.0 ellipse 1.0 2.0 2.0  0.0 90.0  0.0
+ O     0.0 0.0 0.0 ellipse 2.0 1.0 2.0  0.0 90.0 90.0
+ O     4.0 0.0 0.0 ellipse 2.0 2.0 1.0  0.0  0.0  0.0
+
+where the ellipse keyword must be followed by three numbers describing the x, y
+and z axis dimensions and three Euler angles (alpha, beta and gamma). The
+convention used for the Euler angles is: rotation of gamma about Z; rotation of
+beta about Y; rotation of alpha about Z, where X, Y and Z are global axes.
+
+Revert
+
+Revert to the saved version of the current file.
+
+Save
+
+Choose a file to save coordinate data to. The following options are available:
+
+  * XYZ (all): the atom types and Cartesian coordinates for all (visible) atoms
+    in all frames.
+  * XYZ (frame): the atom types and Cartesian coordinates for all (visible)
+    atoms in the current frame.
+  * XYZ + connectivities (frame): the information for the current frame, plus
+    for each atom a list of the other atoms which it is bonded to.
+  * Auxiliary info: currently this saves information about the perspective set
+    for each frame.
+
+Merge
+
+Merge the current Cartesian coordinates with those in another file. The
+following options are available:
+
+  * Use first frame: merge the first frame in the selected file with each of
+    those in the current file.
+  * Use all frames: merge the the first frame in the selected file with the
+    first in the current file, the second with the second, and so on.
+
+Export
+
+Choose a file to export data to. The following options are available for the
+non-OpenGL rendering:
+
+  * Fig (b/w): FIG format rendering of the canvas (black and white).
+  * Fig (colour): FIG format rendering of the canvas (colour).
+  * EPS (b/w): encapsulated PostScript rendering of the canvas (black and
+    white).
+  * EPS (colour): encapsulated PostScript rendering of the canvas (colour).
+
+The following options are available for the OpenGL rendering:
+
+  * GL2PS (EPS): encapsulated PostScript rendering of the canvas (uses the
+    GL2PS library).
+  * GL2PS (PDF): PDF format rendering of the canvas (uses the GL2PS library).
+  * GL2PS (SVG): SVG format rendering of the canvas (uses the GL2PS library).
+
+The following option is available for either type of rendering:
+
+  * XPM: XPM format rendering of the canvas (only available if XPM support has
+    been compiled in).
+
+Print
+
+Convenient dialog to enable printing of PostScript rendering of the canvas
+(black and white, or colour).
+
+Quit
+
+Quit the application; no offers will be made to save any data under any
+circumstances.
+
+Control
+
+The menu entries under Control provide a number of pop up dialogs for
+controlling various aspects of frames.
+
+Frames
+
+The frames dialog controls the animation of multiple-frame files. At the top,
+the frame number and corresponding comments are displayed. If the comment is
+empty, this is also indicated.
+
+Next, there are a number of buttons which do the following:
+
+  * Start: start the animation (which loops infinitely). While the animation is
+    playing only a limited amount of functionality remains. The Stop button can
+    of course be pressed and mouse actions on the canvas are mostly supported.
+  * Stop: stop the animation.
+  * Next: move to the next frame.
+  * Previous; move to the previous frame.
+  * Rewind; move to the first frame.
+  * Bounce; animate the frames but when the last frame is reached, animate them
+    in reverse order until the first frame is reached and so on.
+  * Make anim (XPM only): save an XPM file for each frame, with a comment root.
+
+The speed of the animation can be controlled with the scale bar marked with
+"Select speed".
+
+If the "Centre each frame" button is activated, then when ever the frame is
+changed, the centre of mass is moved to the origin. This can be useful if an
+animation involved large displacements of the centre of mass resulting in the
+atoms leaving the field of view.
+
+Finally, a frame can be selected by number in the "Select frame" text field.
+
+Animate
+
+The animate dialog allows a frame to be rotated by a specified angle by a
+specified number of times about a specified axis. The animation is started with
+the "Start" button and can be stopped with the "Stop" button. An indication of
+the progress of the animation is given in the message area. Such animations can
+be saved by clicking on the "Save" button followed by selecting a filename; the
+default type is XYZ, which saves the coordinates for each frame of the
+animation. With XPM support, an option to save each frame to an XPM file
+exists.
+
+Measure
+
+The Measure dialog shows the distances and angles between selected atoms. Atoms
+are selected and deselected using [mouse-3] and a selected atom is indicated on
+the canvas by being stippled. Up to four atoms can be pushed on to and popped
+off the stack. The selections can be cleared using the "Unselect all atoms"
+button. Each selected atom is labelled A-D and these labels also appear on the
+canvas. The atom number is also displayed in the dialog.
+
+Perspective
+
+The perspective dialog contains two scale bars: the "Alter scale" simply
+controls the size at which atoms, bonds and so on are drawn and the "Choose
+depth" scale allows the depth of field to be varied. If the "Toggle depth"
+button is not activated, then there is no variation in the atom size with
+depth. The settings can be chosen to "Act on all frames" or to "Act on current
+frame".
+
+Edit
+
+The menu entries under Edit provide a number of pop up dialogs which can alter
+both the properties of atoms and bonds.
+
+Visible
+
+From this dialog, the visibility of each atom can be toggled, i.e., you can
+directly control whether or not an atom is displayed on the canvas. Individual
+atoms can be selected using Shift + [Mouse-3] and all invisible atoms can
+(temporarily) be shown with Shift + [Mouse-1]. In addition the visibility of
+groups of atoms can be toggled with buttons labelled for example "Toggle H
+atoms", "Invert selection" and "Reselect all". Each of these can work for:
+
+  * all atoms on the canvas.
+  * all atoms inside a rectangular region.
+  * all atoms outside a rectangular region.
+
+(Note that rectangular regions can be drawn with Control + [Mouse-1].)
+
+If all frames contain the same number of atoms, then the "Propagate
+visibilities to all frames" allows changes to apply to all frames.
+
+Positions
+
+Scale bars and text widgets are available to translate the selected atoms in
+the X, Y and Z directions, and to rotate the selected atoms about the X, Y and
+Z axes. As for the selection of the visible atoms, each can be toggled with
+Control + [Mouse-3] when the Edit->Positions dialog is open. Groups of atoms
+can be selected in the same way as outlined above. When an atom is not selected
+it is drawn with a cross-hair (not OpenGL rendering) and its position cannot be
+changed.
+
+Scale coordinates
+
+This dialog allows the atom (and vector) coordinates to be scaled by a constant
+factor. Internally, the program uses Angstrom for the unit of length, and a
+pre-defined Bohr to Angstrom factor is available, allowing convenient
+conversion for input files that have the coordinates in Bohr. An Angstrom to
+Bohr factor is available for the reverse transformation.
+
+Atom and bond sizes
+
+In this dialog, the size of the atoms and bonds as displayed on the canvas can
+be varied. There are scale bars for the atomic radius, the bond width and the
+hydrogen bond width. Note that the sizes of the atoms as displayed on the
+canvas also depend on the covalent or van der Waals radii as set in the
+external elements file (see below) which is read when the first file is opened.
+
+Bond factors
+
+These two scale bars allow some control over which atoms are considered to be
+bonded or H-bonded. The algorithm which determines this information from the
+Cartesian coordinates uses the sum of the covalent radii of pairs of atoms.
+Increasing the default values will lead to more bonds and decreasing the
+default value will lead to fewer bonds. If a system is split into molecules
+(see the molecule keyword below), separate factors for intermolecular and
+intramolecular bonds can be specified.
+
+Vector display
+
+The vector rendering works better with OpenGL rendering, and this is
+recommended at present. Some customization of how the vectors look is possible.
+
+Bounding Box
+
+With this dialog, the way that the bounding box is determined can be chosen. If
+you choose "automatically", XMakemol draws a cuboid which encapsulates all
+visible atoms. The faces are parallel to the xy, yz and xz planes. If "from
+file" is chosen, the minimum and maximum coordinates of the bounding box are
+read from the input file. The input fields allow you to adjust the size of the
+automatic bounding box.
+
+The visibility of the bounding box can be toggled via the "Bounding Box" item
+in the View menu.
+
+This dialog is only available if a file is loaded.
+
+Element properties
+
+This dialog allows the convenient editing of the default element properties
+(colour, covalent/van der Waals radii). These can be saved, in which case the
+changes will be used for future XMakemol sessions.
+
+GL rendering
+
+If OpenGL support has been compiled in, then this dialog will be present.
+Firstly, it allows the switching of rendering between the X and OpenGL
+primitives. Secondly, it allows the customization of some of the OpenGL
+rendering.
+
+The customizations which can currently be made are:
+
+  * Switch between "No Stereo", "Stereo Pair" and "Red/Blue stereo" viewing:
+    the first option renders a single image; the second option renders a stereo
+    pair of images for eyes-crossed viewing; the last option requires glasses
+    with red and blue lenses. It is possible to alter the separation of the two
+    images.
+  * Lighting can be switched on and off, and a spotlight effect can be added,
+    the diffuseness of which can be customized.
+  * Molecules can be rendered in the normal "Ball and Stick" mode or as
+    "Tubes". In the latter case, bonded atoms are displayed such that they
+    appear to cap the bond to which they are attached.
+  * The number of planes used to represent atom and bond surfaces can be
+    altered.
+  * Options to alter the perspective of the rendered scene (field of view, and
+    position of eye).
+
+Track
+
+The Track menu controls the behaviour of the mouse on the canvas and also
+allows some general transformations to be made to the atomic coordinates. The
+current mouse bindings can be found in the Help menu.
+
+Rotate about local COM
+
+If this is selected, the mouse on the canvas will control rotations of the
+atoms about the local centre of mass i.e. that defined by the selected atoms.
+
+Rotate about origin
+
+If this is selected, the mouse on the canvas will control rotations of the
+atoms about the global origin.
+
+Centre
+
+This moves the centre of mass of the system to the origin.
+
+Original orientation
+
+Restore the original orientation (i.e., realign axes).
+
+Original position
+
+Restore the original position of the atoms (i.e., remove any displacements made
+to the centre of mass).
+
+Reflect x coordinates
+
+Reflects the atomic coordinates about the yz plane.
+
+Reflect y coordinates
+
+Reflects the atomic coordinates about the xz plane.
+
+Reflect z coordinates
+
+Reflects the atomic coordinates about the xy plane.
+
+Invert through centre
+
+Invert all coordinates through the origin.
+
+View
+
+The View menu controls what is displayed on the canvas.
+
+Atoms
+
+Toggle whether or not atoms are displayed.
+
+Bonds
+
+Toggle whether or not bonds are displayed. Bonds can be formed between any two
+types of atom.
+
+H-bonds
+
+Toggle whether or not hydrogen bonds are displayed. Hydrogen bonds can be
+formed between any hydrogen and any non-hydrogen atoms.
+
+Vectors
+
+Toggle whether or not vectors are displayed.
+
+Atom numbers
+
+Toggle whether of not the atom numbers are displayed for each atom. These
+correspond to the order in which the atoms were read in.
+
+Atom symbols
+
+Toggle whether or not the atomic symbols are displayed for each atom.
+
+Axes
+
+Toggle whether or not a set of axes (x,y,z) are displayed on the canvas. These
+correspond to a local axis set which before any rotations is parallel to the
+global axes (X,Y,Z). (not OpenGL rendering)
+
+Bounding box
+
+If enabled, a cuboid is drawn which encapsulates all visible atoms. The faces
+are parallel to the xy, yz and xz planes.
+
+Outline
+
+If enabled, this reduces the amount of drawing done on the canvas while the
+system is being rotated or translated. This can be useful for large systems for
+which the normal interactive response is slow.
+
+Help
+
+About
+
+Displays the version and Copyright information.
+
+Documentation
+
+Gives a pointer to the online documentation.
+
+Mouse
+
+This dialog gives a list of actions which the mouse has on the canvas.
+
+Bugs
+
+Details how to report bugs.
+
+Miscellaneous
+
+The elements file
+
+The elements file is an external file, the location of which must be specified
+in the Makefile before building. The head of the elements file (past the
+copyright information) looks like this:
+
+ ! Z     Symbol       Mass        Colour          Cov rad         VdW rad
+   1     H            1.008       White           0.300           1.000
+   2     HE           4.003       Pink            0.310           1.400
+
+The first entry is the atomic number. The second entry is a label corresponding
+to what should be written in an input file (note that comparison is not case
+sensitive). The third entry is the atomic mass. The fourth entry is the colour
+which is used to paint the atom (and bonds) on the canvas. The final two
+entries are covalent and van der Waals radii; if there is no van der Waals
+radius for a given atom a value of zero should be used.
+
+The xmake_anim.pl script
+
+This script which is distributed with the source can be used to merge a group
+of XPM files produced for an animation into a single file:
+
+Usage: xmake_anim.pl [options] prefix
+       -c                (clean up files)
+       -d <delay>        (in 1/100th seconds)
+       -l <no_loops>     (0 for infinite)
+       -o <output>
+
+Other input file options
+
+Examples of the XYZ syntax have been given above. The atom_vector and ellipse
+keywords have also been described. Several other keywords are available for use
+in input files:
+
+  * atom_rgb: give RGB values for the atom colour, overriding the default.
+  * atom_color: give colour name for the atom, overriding the default.
+
+Periodic systems
+
+There is limited support for dealing with periodic systems. This example shows
+how to use the available features:
+
+2
+
+Na 0.0 0.0 0.0 crystal_origin   0.0 0.0 0.0 crystal_images 5 5 5
+Cl 2.5 2.5 2.5 crystal_vector 1 5.0 0.0 0.0 crystal_vector 2 0.0 5.0 0.0 crystal_vector 3 0.0 0.0 5.0
+
+Here, a two atom unit cell is defined, and a 5x5x5 slab is defined to be
+rendered by the crystal_images keyword. Three vectors are defined by the
+crystal_vector keyword, and these define the cell vectors. If the origin of the
+crystal isn't at the origin itself, an offset can be specified with the
+crystal_origin keyword.
+
+Customized rendering modes
+
+It is possible to render different groups of atoms with different rendering
+modes when OpenGL rendering is in use with lighting switched on. The syntax is:
+
+63
+Water molecule inside Buckminster Fullerene
+C  1.22650000   0.00000000   3.31450000  render_tube
+C  0.37900000   1.16640000   3.31450000
+
+[...]
+
+C  2.33370000  -2.58660000  -0.59480000
+O  0.00000000   0.00000000   0.00000000  render_ball_and_stick
+H  0.76923955   0.00000000  -0.59357141
+H -0.76923955   0.00000000  -0.59357141
+
+where the first 60 atoms will be rendered as "Tubes", and the final three as
+"Balls and Sticks". Note, that if this type of input is used, then the
+specifications override the normal "Tubes" or "Ball and Stick" choice that can
+be made, and these buttons (described above) will have no effect.
+
+Customized bounding box
+
+You can specify a custom bounding box, which can be shown instead of the
+automatically-determined one. This is done using the bbox_xyz keyword. It takes
+the minimum and maximum coordinates of the bounding box as parameters, in the
+following order: xmin, xmax, ymin, ymax, zmin, zmax. For example,
+
+3
+Custom bounding box around water molecule
+O  0.00000000   0.00000000   0.00000000
+H  0.76923955   0.00000000  -0.59357141  bbox_xyz -1.0 1.0 -0.5 0.5 -1.0 0.5
+H -0.76923955   0.00000000  -0.59357141
+
+draws a box around a water molecule. As you can see, bbox_xyz does not have to
+be associated with the first atom. If this keyword is given in the input file,
+the bounding box will automatically be made visible after the file is loaded.
+Via the "Bounding Box" item in the "Edit" menu you can select which bounding
+box is shown and also modify the size of the automatically-determined one. If
+you give the bounding box data in the first frame, it will be reused in all
+frames, unless other data is specified. This feature is, for example, useful if
+you want to visualize results of computer simulations of bulk systems, with the
+bounding box representing your simulation box.
+
+Specifying molecules
+
+The molecule keyword can be used on an input line to signify the start of a new
+molecule (this is implied for the first one). At present, the only feature that
+exploits this is the choice of separate values for intermolecular and
+intramolecular bond and H-bond factors.
+
+-------------------------------------------------------------------------------
+
+Updated: 2007-08-30

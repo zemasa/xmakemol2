@@ -1,0 +1,166 @@
+/*
+
+Copyright (C) 2001, 2002, 2003, 2004 Matthew P. Hodges
+Copyright (C) 2001, 2002, 2003, 2004, 2005 Matthew P. Hodges
+
+This file is part of XMakemol.
+
+XMakemol is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2, or (at your option)
+any later version.
+
+XMakemol is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with XMakemol; see the file COPYING.  If not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+configure.in for xmakemol:
+
+    acincluce.m4 gives detailed description of local routines below:
+         [ICE_FIND_MOTIF]  -- borrowed from mgv
+         [ICE_FIND_XPM]    -- borrowed from mgv
+         [SIM_AC_CHECK_OPENGL]  -- derived from coin3d
+         [SIM_AC_CHECK_GLU]  -- derived from coin3d
+         [SIM_CHECK_MOTIF_GLWIDGET] --derived from coin3d
+*/
+
+dnl Process this file with autoconf to produce a configure script.
+AC_INIT(xmakemol.c)
+
+dnl Checks for system
+AC_CANONICAL_SYSTEM
+
+AM_INIT_AUTOMAKE(xmakemol,5.16)
+AM_CONFIG_HEADER(config.h)
+
+
+dnl Checks for programs.
+AC_PROG_CC
+AC_PROG_INSTALL
+
+dnl Configs from ac_opengl package
+dnl AC_CONFIG_AUX_DIR(config)
+
+dnl Checks for libraries.
+dnl ==========================================================================
+dnl Checks for libraries.
+dnl ==========================================================================
+AC_PATH_X
+AC_PATH_XTRA
+ICE_FIND_MOTIF
+ICE_FIND_XPM
+LIBS="$LIBS $X_EXTRA_LIBS"
+CFLAGS="$CFLAGS $X_CFLAGS"
+CPPFLAGS="$CPPFLAGS $X_CFLAGS"
+LDFLAGS="$LDFLAGS $X_LIBS"
+ 
+dnl ==========================================================================
+dnl Check for X11.
+dnl ==========================================================================
+X11_LIBS=""
+AC_CHECK_LIB(X11, XOpenDisplay, X11_LIBS="-lX11",,${X_PRE_LIBS})
+if test "$X11_LIBS" = ""; then
+AC_MSG_ERROR([The X11 library '-lX11' could not be found.
+                Please use the configure options '--x-includes=DIR'
+                and '--x-libraries=DIR' to specify the X location.
+                See the 'config.log' file for further diagnostics.])
+fi
+AC_SUBST(X_LIBS)
+AC_SUBST(X11_LIBS)
+AC_SUBST(X_PRE_LIBS)
+ 
+dnl ==========================================================================
+dnl Check for Xext, Xpm usually needs the shape extensions.
+dnl We don't crap out if we can't find it though.
+dnl ==========================================================================
+XEXT_LIBS=""
+AC_CHECK_LIB(Xext, XShapeQueryVersion, XEXT_LIBS="-lXext",,
+        ${X_PRE_LIBS} ${X11_LIBS})
+AC_SUBST(XEXT_LIBS)
+
+dnl ==========================================================================
+dnl Check for Xi, GLUT sometimes uses it
+dnl We don't crap out if we can't find it though.
+dnl ==========================================================================
+XI_LIBS=""
+AC_CHECK_LIB(Xi, XGetExtensionVersion, XI_LIBS="-lXi",,
+        ${X_PRE_LIBS} ${X11_LIBS})
+AC_SUBST(XI_LIBS)
+
+dnl ==========================================================================
+dnl Check for Xt
+dnl ==========================================================================
+XT_LIBS=""
+AC_CHECK_LIB(Xt, XtToolkitInitialize, XT_LIBS="-lXt",,
+        ${X_PRE_LIBS} ${X11_LIBS})
+if test "$XT_LIBS" = ""; then
+AC_MSG_ERROR([The X toolkit library '-lXt' could not be found.
+                Please use the configure iptions '--x-includes=DIR'
+                and '--x-libraries=DIR' to specify the X location.
+                See the 'config.log' file for further diagnostics.])
+fi
+AC_SUBST(XT_LIBS)
+ 
+dnl ==========================================================================
+dnl Check for Motif
+dnl I couldn't resist using the most hideously named function in the Motif
+dnl API in this test, sorry if I've frightened anyone.
+dnl ==========================================================================
+XM_LIBS=""
+AC_CHECK_LIB(Xm, XmRepTypeInstallTearOffModelConverter,
+        XM_LIBS="-lXm"
+        AC_DEFINE(HAVE_MOTIF, 1), AC_DEFINE(HAVE_MOTIF, 0),
+        ${X_PRE_LIBS} ${XPM_LIBS} ${XEXT_LIBS} ${XT_LIBS} ${XI_LIBS} ${X11_LIBS})
+if test "$XM_LIBS" = ""; then
+AC_MSG_ERROR([The Motif library '-lXm' could not be found.
+                Please use the configure options '--with-motif-includes=DIR'
+                and '--with-motif-libraries=DIR' to specify the Xm location.
+                See the 'config.log' file for further diagnostics.])
+fi
+AC_SUBST(XM_LIBS)
+
+dnl
+dnl Check for OpenGL
+dnl
+
+GL_LIBS=""
+AC_CHECK_LIB(m,pow,[MATHLIB="true"])
+if test x"$MATHLIB" != x"true"; then
+	AC_MSG_ERROR([the math library '-lm' could not be found!
+			Please check the installation of math library])
+fi
+if test x"$MATHLIB" = x"true"; then
+  LIBS="$LIBS -lm"
+  SIM_AC_CHECK_OPENGL([OPENGLLIB="true"])
+  if test x"$OPENGLLIB" = x"true" ; then
+    SIM_AC_CHECK_GLU([GLULIB="true"])
+    if test x"$GLULIB" = x"true" ; then
+	SIM_CHECK_MOTIF_GLWIDGET([GLWIDGETLIB="true"],GL_LIBS="")
+        XMAKEMOL_GLUT_CHECK()
+    fi
+  fi
+fi
+
+AC_SUBST(GL_LIBS)	
+
+dnl Checks for other libraries
+
+dnl AC_CHECK_LIB(gen,basename,[AC_DEFINE(HAVE_LIBGEN,1) LIBS="${LIBS} -lgen"],)
+
+dnl Checks for other header files.
+AC_HEADER_STDC
+AC_CHECK_HEADERS(unistd.h)
+
+dnl Checks for typedefs, structures, and compiler characteristics.
+AC_C_CONST
+
+dnl Checks for library functions.
+AC_FUNC_ALLOCA
+AC_CHECK_FUNCS(ftime strstr usleep)
+
+AC_OUTPUT(Makefile)
